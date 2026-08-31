@@ -1,0 +1,2 @@
+Python 3.8 или выше (рекомендуется Python 3.10+)
+pyTelegramBotAPI

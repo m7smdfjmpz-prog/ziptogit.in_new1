@@ -1,0 +1,593 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>ElfGiftMarket • NFT Gifts on Telegram</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #0b0e14 0%, #141a24 100%);
+            color: #f0f3fa;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* subtle animated background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(42, 171, 238, 0.08) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(138, 43, 226, 0.08) 0%, transparent 45%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrapper {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        /* header / nav */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, #2AABEE, #8A2BE2);
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px -5px rgba(42, 171, 238, 0.3);
+        }
+
+        .logo-icon i {
+            font-size: 28px;
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #fff, #cfdef5);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .telegram-badge {
+            background: rgba(42, 171, 238, 0.15);
+            padding: 0.6rem 1.4rem;
+            border-radius: 60px;
+            border: 1px solid rgba(42, 171, 238, 0.3);
+            backdrop-filter: blur(8px);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .telegram-badge i {
+            color: #2AABEE;
+            font-size: 1.2rem;
+        }
+
+        .telegram-badge:hover {
+            background: rgba(42, 171, 238, 0.25);
+            border-color: #2AABEE;
+        }
+
+        /* hero */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin: 1rem 0 4rem 0;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.6rem, 8vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.2;
+            max-width: 950px;
+            background: linear-gradient(to right, #ffffff, #c7e0ff, #b7a6ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1.5rem;
+        }
+
+        .highlight {
+            background: linear-gradient(145deg, #2AABEE, #6a4eff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            max-width: 700px;
+            color: #b8c7e3;
+            margin-bottom: 2.8rem;
+            backdrop-filter: blur(4px);
+        }
+
+        /* interactive main button (beautiful + interactive) */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            background: linear-gradient(135deg, #2AABEE, #6a4eff);
+            border: none;
+            padding: 1.1rem 2.8rem;
+            border-radius: 60px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 20px 35px -5px rgba(42, 171, 238, 0.5), 0 0 0 0 rgba(106, 78, 255, 0.4);
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary i {
+            font-size: 1.8rem;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02) translateY(-3px);
+            box-shadow: 0 28px 45px -8px #2AABEE, 0 0 0 2px rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #3eb5f5, #7f66ff);
+        }
+
+        .btn-primary:hover i {
+            transform: translateX(6px) rotate(5deg);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+            box-shadow: 0 15px 25px -5px #2AABEE;
+        }
+
+        /* ripple effect on click (interactive) */
+        .btn-primary .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: ripple-animation 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .btn-subtle {
+            color: #9bb1d1;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        /* features / description */
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem 3rem;
+            margin: 4rem 0 3rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(20, 30, 45, 0.5);
+            backdrop-filter: blur(8px);
+            padding: 0.9rem 1.8rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 18px -8px rgba(0,0,0,0.3);
+        }
+
+        .feature-item i {
+            font-size: 1.8rem;
+            color: #2AABEE;
+        }
+
+        .feature-item span {
+            font-weight: 500;
+        }
+
+        /* section titles */
+        .section-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2.8rem;
+            letter-spacing: -0.02em;
+        }
+
+        .section-title i {
+            color: #8A2BE2;
+            margin-right: 10px;
+        }
+
+        /* NFT gifts gallery (картинки подарков) */
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0 2.5rem;
+        }
+
+        .gift-card {
+            background: rgba(22, 32, 48, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 1.8rem 1.5rem 1.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 35px -12px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .gift-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(42, 171, 238, 0.35);
+            box-shadow: 0 30px 45px -12px #2AABEE33;
+        }
+
+        .gift-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 24px;
+            background: linear-gradient(145deg, #1f2a3f, #0f1a26);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* стилизованные изображения NFT подарков — реальные картинки (эмодзи + градиенты как арт) */
+        .gift-img-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* вставляем разные фоны / изображения, напоминающие подарки Telegram */
+        .gift-1 {
+            background: radial-gradient(circle at 30% 30%, #f5d742, #e58e26);
+        }
+        .gift-2 {
+            background: radial-gradient(circle at 70% 20%, #7b61ff, #3d28b0);
+        }
+        .gift-3 {
+            background: radial-gradient(circle at 40% 60%, #ff66b2, #b82b7c);
+        }
+        .gift-4 {
+            background: radial-gradient(circle at 60% 40%, #2AABEE, #0f5b8c);
+        }
+
+        .gift-icon-large {
+            font-size: 5.5rem;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
+            color: #fff9e6;
+        }
+
+        .gift-label {
+            margin-top: 6px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        .gift-card h3 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .gift-desc {
+            color: #a3bbdb;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-tag {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            display: inline-block;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            margin-top: 0.8rem;
+        }
+
+        /* CTA section */
+        .cta-section {
+            background: rgba(12, 22, 36, 0.6);
+            backdrop-filter: blur(16px);
+            border-radius: 60px;
+            padding: 3.5rem 2.5rem;
+            margin: 3.5rem 0 2rem;
+            text-align: center;
+            border: 1px solid rgba(42, 171, 238, 0.2);
+            box-shadow: 0 20px 40px -10px #00000055;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* footer */
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #7c93b0;
+            font-size: 0.95rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 2rem;
+        }
+
+        .footer a {
+            color: #b0c8ff;
+            text-decoration: none;
+        }
+
+        /* адаптив */
+        @media (max-width: 600px) {
+            .wrapper { padding: 1rem 1.2rem; }
+            .navbar { flex-direction: column; align-items: flex-start; }
+            .btn-primary { font-size: 1.2rem; padding: 0.9rem 1.8rem; }
+            .hero h1 { font-size: 2.3rem; }
+            .section-title { font-size: 2rem; }
+            .cta-section { padding: 2rem 1.5rem; border-radius: 40px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- навигация -->
+        <nav class="navbar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <span class="logo-text">ElfGiftMarket</span>
+            </div>
+            <div class="telegram-badge">
+                <i class="fab fa-telegram-plane"></i>
+                <span>@ElfGiftMarketBot</span>
+            </div>
+        </nav>
+
+        <!-- главный блок -->
+        <section class="hero">
+            <h1>
+                Buy & Sell <span class="highlight">NFT Gifts</span><br> 
+                directly in Telegram
+            </h1>
+            <p class="hero-description">
+                ? Trade unique collectible gifts as NFTs ? <br>
+                No extra apps — everything happens inside your favorite messenger. 
+                Fast, secure, and fun with <strong>@ElfGiftMarketBot</strong>.
+            </p>
+            
+            <!-- красивая интерактивная кнопка (переход в бот) -->
+            <a href="https://t.me/ElfGiftMarketBot" target="_blank" class="btn-primary" id="magicButton">
+                <i class="fab fa-telegram-plane"></i>
+                Open Bot in Telegram
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <div class="btn-subtle">
+                <i class="fas fa-mouse"></i> click — instant redirect to @ElfGiftMarketBot
+            </div>
+        </section>
+
+        <!-- фичи / описание возможностей -->
+        <div class="features">
+            <div class="feature-item">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Buy NFT gifts instantly</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-tag"></i>
+                <span>Sell your collectibles</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secure Telegram trades</span>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-bolt"></i>
+                <span>Lightning fast</span>
+            </div>
+        </div>
+
+        <!-- раздел с картинками NFT подарков из телеграма -->
+        <h2 class="section-title">
+            <i class="fas fa-images"></i> Featured NFT gifts
+        </h2>
+        <div class="gift-grid">
+            <!-- карточка 1 -->
+            <div class="gift-card">
+                <div class="gift-image">
+                    <div class="gift-img-content gift-1">
+                        <i class="fas fa-gift gift-icon-large"></i>
+                        <span class="gift-label">? Star Box</span>
+                    </div>
+                </div>
+                <h3>Cosmic Gift</h3>
+                <div class="gift-desc">Telegram NFT · rare</div>
+                <div class="price-tag"><i class="fas fa-gem"></i> 0.25 TON</div>
+            </div>
+            <!-- карточка 2 -->
+            <div class="gift-card">
+                <div class="gift-image">
+                    <div class="gift-img-content gift-2">
+                        <i class="fas fa-crown gift-icon-large"></i>
+                        <span class="gift-label">?? Royal</span>
+                    </div>
+                </div>
+                <h3>Crown Jewel</h3>
+                <div class="gift-desc">Limited edition · NFT</div>
+                <div class="price-tag"><i class="fas fa-gem"></i> 1.2 TON</div>
+            </div>
+            <!-- карточка 3 -->
+            <div class="gift-card">
+                <div class="gift-image">
+                    <div class="gift-img-content gift-3">
+                        <i class="fas fa-heart gift-icon-large"></i>
+                        <span class="gift-label">?? Love</span>
+                    </div>
+                </div>
+                <h3>Heartfelt NFT</h3>
+                <div class="gift-desc">Animated Telegram gift</div>
+                <div class="price-tag"><i class="fas fa-gem"></i> 0.8 TON</div>
+            </div>
+            <!-- карточка 4 (ещё одна картинка) -->
+            <div class="gift-card">
+                <div class="gift-image">
+                    <div class="gift-img-content gift-4">
+                        <i class="fas fa-dragon gift-icon-large"></i>
+                        <span class="gift-label">?? Mythic</span>
+                    </div>
+                </div>
+                <h3>Dragon Egg</h3>
+                <div class="gift-desc">Legendary NFT collectible</div>
+                <div class="price-tag"><i class="fas fa-gem"></i> 3.5 TON</div>
+            </div>
+        </div>
+        <p style="text-align: center; color: #8da1c4; margin-top: -0.5rem;">
+            <i class="fas fa-arrow-right"></i> and many more inside the bot — discover, trade, collect.
+        </p>
+
+        <!-- ещё один CTA блок -->
+        <div class="cta-section">
+            <h2>Ready to dive into Telegram NFT market?</h2>
+            <p style="margin-bottom: 2rem; font-size: 1.2rem; color: #bfd2f0;">
+                @ElfGiftMarketBot is your gateway to the future of gifting.
+            </p>
+            <div class="cta-buttons">
+                <a href="https://t.me/ElfGiftMarketBot" target="_blank" class="btn-primary" style="padding: 1rem 2.5rem; font-size: 1.3rem;">
+                    <i class="fab fa-telegram-plane"></i> Start Trading
+                </a>
+            </div>
+            <p style="margin-top: 1.8rem; opacity: 0.8;">
+                <i class="fas fa-magic"></i> Just click — the bot opens in Telegram
+            </p>
+        </div>
+
+        <!-- футер -->
+        <footer class="footer">
+            <p>© 2026 ElfGiftMarket — NFT gifts on Telegram. <br class="mobile-break">
+            <i class="fas fa-robot"></i> Bot: <a href="https://t.me/ElfGiftMarketBot" target="_blank">@ElfGiftMarketBot</a> • 
+            <i class="fas fa-shield"></i> Secure & decentralized vibes</p>
+        </footer>
+    </div>
+
+    <!-- интерактивный ripple эффект для кнопок (делает их ещё красивее) -->
+    <script>
+        (function() {
+            // добавляем эффект "волны" при клике на все кнопки с классом btn-primary
+            const buttons = document.querySelectorAll('.btn-primary');
+            
+            function createRipple(event) {
+                const button = event.currentTarget;
+                const circle = document.createElement('span');
+                const diameter = Math.max(button.clientWidth, button.clientHeight);
+                const radius = diameter / 2;
+                
+                const rect = button.getBoundingClientRect();
+                circle.style.width = circle.style.height = `${diameter}px`;
+                circle.style.left = `${event.clientX - rect.left - radius}px`;
+                circle.style.top = `${event.clientY - rect.top - radius}px`;
+                circle.classList.add('ripple');
+                
+                // удаляем старые ripple
+                const oldRipple = button.querySelector('.ripple');
+                if (oldRipple) oldRipple.remove();
+                
+                button.appendChild(circle);
+            }
+            
+            buttons.forEach(btn => {
+                btn.addEventListener('click', createRipple);
+            });
+
+            // дополнительная анимация для главной кнопки при наведении (уже есть в css)
+            // лёгкая подсветка
+        })();
+    </script>
+    <!-- небольшая подсказка: все картинки NFT подарков стилизованы под коллекционные подарки Telegram -->
+</body>
+</html>
