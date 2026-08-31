@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Elf Guard · NFT Trading Bot</title>
+
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0b0b1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            color: #fff;
+            /* gradient background for depth */
+            background: radial-gradient(circle at 10% 20%, rgba(20, 10, 50, 1) 0%, #0b0b1a 90%);
+        }
+
+        /* ——— LIQUID GLASS CARD ——— */
+        .glass-card {
+            max-width: 800px;
+            width: 100%;
+            padding: 2.8rem 2.5rem;
+            border-radius: 3.5rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            transition: transform 0.3s ease;
+        }
+
+        /* Liquid glass animated gradient overlay */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg at 50% 50%,
+                    rgba(120, 80, 255, 0.08),
+                    rgba(0, 200, 255, 0.05),
+                    rgba(255, 100, 200, 0.08),
+                    rgba(120, 80, 255, 0.08));
+            animation: liquidSwirl 18s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes liquidSwirl {
+            0% { transform: rotate(0deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1.2); }
+        }
+
+        /* second liquid layer for more depth */
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.02), transparent 60%);
+            animation: liquidPulse 8s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes liquidPulse {
+            0% { opacity: 0.3; transform: scale(1) translate(0, 0); }
+            100% { opacity: 0.7; transform: scale(1.1) translate(-2%, -2%); }
+        }
+
+        /* all content sits above the liquid layers */
+        .glass-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ——— LAYOUT ——— */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .bot-name {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .bot-name h1 {
+            font-weight: 600;
+            font-size: 1.9rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #c0b5ff, #7fd6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .shield-icon {
+            font-size: 2.2rem;
+            line-height: 1;
+        }
+
+        .lang-selector {
+            display: flex;
+            gap: 0.3rem;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.25rem;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.4rem 0.9rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        .lang-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(100, 100, 255, 0.15);
+        }
+
+        .lang-btn:hover {
+            color: #fff;
+        }
+
+        .tagline {
+            font-size: 1rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
+            letter-spacing: 0.2px;
+            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            padding-left: 1rem;
+        }
+
+        .currency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 0.7rem;
+            margin: 1.8rem 0 2.2rem;
+        }
+
+        .currency-badge {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50px;
+            padding: 0.4rem 0.2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(2px);
+            transition: all 0.2s;
+        }
+
+        .currency-badge span {
+            opacity: 0.6;
+            font-weight: 300;
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem 1.5rem;
+            margin: 1.8rem 0 2.2rem;
+            padding: 1.2rem 1.2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .features li {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .features li::before {
+            content: "✦";
+            color: #7fd6ff;
+            font-size: 0.7rem;
+        }
+
+        .cta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.2rem;
+            margin-top: 1.2rem;
+            padding-top: 1.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #6f5eff, #4f9eff);
+            padding: 0.9rem 2.2rem;
+            border-radius: 80px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 25px -5px rgba(80, 100, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 15px 35px -8px rgba(80, 100, 255, 0.4);
+        }
+
+        .btn-secondary {
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
+            padding-bottom: 2px;
+            transition: color 0.2s;
+        }
+
+        .btn-secondary:hover {
+            color: #fff;
+        }
+
+        .footer {
+            margin-top: 2.2rem;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.15);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        /* ——— language content (js controlled) ——— */
+        .lang-content {
+            display: block;
+        }
+
+        .lang-content.hidden {
+            display: none;
+        }
+
+        /* mobile tweaks */
+        @media (max-width: 550px) {
+            .glass-card { padding: 2rem 1.5rem; border-radius: 2.5rem; }
+            .bot-name h1 { font-size: 1.5rem; }
+            .currency-grid { grid-template-columns: repeat(3, 1fr); }
+            .features { flex-direction: column; gap: 0.4rem; }
+            .cta { flex-direction: column; align-items: stretch; }
+            .btn-primary { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-card">
+
+    <!-- ========== HEADER ========== -->
+    <div class="header">
+        <div class="bot-name">
+            <span class="shield-icon">🛡️</span>
+            <h1>Elf Guard</h1>
+        </div>
+        <div class="lang-selector">
+            <button class="lang-btn active" data-lang="en">🇬🇧 EN</button>
+            <button class="lang-btn" data-lang="ru">🇷🇺 RU</button>
+            <button class="lang-btn" data-lang="zh">🇨🇳 中文</button>
+        </div>
+    </div>
+
+    <!-- ========== ENGLISH ========== -->
+    <div id="lang-en" class="lang-content">
+        <div class="tagline">⚡ Trade NFTs · RUB → STARS · 10+ currencies</div>
+
+        <div class="currency-grid">
+            <div class="currency-badge">TON</div>
+            <div class="currency-badge">USDT</div>
+            <div class="currency-badge">RUB</div>
+            <div class="currency-badge">STARS</div>
+            <div class="currency-badge">KGS</div>
+            <div class="currency-badge">IDR</div>
+            <div class="currency-badge">UAH</div>
+            <div class="currency-badge">UZS</div>
+            <div class="currency-badge">BYN</div>
+            <div class="currency-badge">BTC</div>
+        </div>
+
+        <ul class="features">
+            <li>Buy &amp; sell NFTs securely</li>
+            <li>Multi‑currency: from RUB to Telegram Stars</li>
+            <li>Built‑in reputation &amp; PIN protection</li>
+            <li>Transparent deal flow with escrow</li>
+        </ul>
+
+        <div class="cta">
+            <a href="https://t.me/OtcGiftTransferElfBot" target="_blank" class="btn-primary">
+                🤖 Launch Bot
+            </a>
+            <a href="#" class="btn-secondary">How it works →</a>
+        </div>
+        <div style="margin-top: 0.8rem; font-size: 0.8rem; color: rgba(255,255,255,0.2);">
+            @OtcGiftTransferElfBot
+        </div>
+    </div>
+
+    <!-- ========== RUSSIAN ========== -->
+    <div id="lang-ru" class="lang-content hidden">
+        <div class="tagline">⚡ Торгуй NFT · RUB → STARS · 10+ валют</div>
+
+        <div class="currency-grid">
+            <div class="currency-badge">TON</div>
+            <div class="currency-badge">USDT</div>
+            <div class="currency-badge">RUB</div>
+            <div class="currency-badge">STARS</div>
+            <div class="currency-badge">KGS</div>
+            <div class="currency-badge">IDR</div>
+            <div class="currency-badge">UAH</div>
+            <div class="currency-badge">UZS</div>
+            <div class="currency-badge">BYN</div>
+            <div class="currency-badge">BTC</div>
+        </div>
+
+        <ul class="features">
+            <li>Покупай и продавай NFT безопасно</li>
+            <li>Мультивалютность: от рублей до звёзд Telegram</li>
+            <li>Встроенная репутация и защита пин-кодом</li>
+            <li>Прозрачная схема сделок с эскроу</li>
+        </ul>
+
+        <div class="cta">
+            <a href="https://t.me/OtcGiftTransferElfBot" target="_blank" class="btn-primary">
+                🤖 Запустить бота
+            </a>
+            <a href="#" class="btn-secondary">Как работает →</a>
+        </div>
+        <div style="margin-top: 0.8rem; font-size: 0.8rem; color: rgba(255,255,255,0.2);">
+            @OtcGiftTransferElfBot
+        </div>
+    </div>
+
+    <!-- ========== CHINESE ========== -->
+    <div id="lang-zh" class="lang-content hidden">
+        <div class="tagline">⚡ 交易 NFT · RUB → STARS · 10+ 种货币</div>
+
+        <div class="currency-grid">
+            <div class="currency-badge">TON</div>
+            <div class="currency-badge">USDT</div>
+            <div class="currency-badge">RUB</div>
+            <div class="currency-badge">STARS</div>
+            <div class="currency-badge">KGS</div>
+            <div class="currency-badge">IDR</div>
+            <div class="currency-badge">UAH</div>
+            <div class="currency-badge">UZS</div>
+            <div class="currency-badge">BYN</div>
+            <div class="currency-badge">BTC</div>
+        </div>
+
+        <ul class="features">
+            <li>安全买卖 NFT</li>
+            <li>多币种：从卢布到 Telegram Stars</li>
+            <li>内置信誉系统与 PIN 保护</li>
+            <li>透明托管交易流程</li>
+        </ul>
+
+        <div class="cta">
+            <a href="https://t.me/OtcGiftTransferElfBot" target="_blank" class="btn-primary">
+                🤖 打开机器人
+            </a>
+            <a href="#" class="btn-secondary">工作原理 →</a>
+        </div>
+        <div style="margin-top: 0.8rem; font-size: 0.8rem; color: rgba(255,255,255,0.2);">
+            @OtcGiftTransferElfBot
+        </div>
+    </div>
+
+    <div class="footer">Elf Guard · secure NFT trading</div>
+</div>
+
+<script>
+    (function() {
+        const langBtns = document.querySelectorAll('.lang-btn');
+        const contents = {
+            en: document.getElementById('lang-en'),
+            ru: document.getElementById('lang-ru'),
+            zh: document.getElementById('lang-zh')
+        };
+
+        function setLanguage(lang) {
+            // hide all
+            Object.keys(contents).forEach(key => {
+                contents[key].classList.add('hidden');
+            });
+            // show selected
+            if (contents[lang]) {
+                contents[lang].classList.remove('hidden');
+            }
+            // update active button
+            langBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        langBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const lang = this.dataset.lang;
+                setLanguage(lang);
+            });
+        });
+
+        // default: English (already active, but ensure content is visible)
+        // in case of any mismatch, force english
+        const activeLang = document.querySelector('.lang-btn.active')?.dataset.lang || 'en';
+        setLanguage(activeLang);
+    })();
+</script>
+
+</body>
+</html>
